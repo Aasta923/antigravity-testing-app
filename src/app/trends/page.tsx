@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { PageShell } from "@/components/ui/PageShell";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { BarChart3, TrendingUp, Info, User, Calendar, Clock } from "lucide-react";
-import { usePersistence } from "@/hooks/usePersistence";
+import { usePersistence } from "@/context/PersistenceContext";
 import { clsx } from "clsx";
 import { format, subDays, startOfDay, isWithinInterval, endOfDay, parseISO } from "date-fns";
 
@@ -12,6 +12,7 @@ export default function TrendsPage() {
   const { records, patients, selectedPatientId, setSelectedPatientId } = usePersistence();
   const [granularity, setGranularity] = useState<'shift' | 'day' | 'week'>('day');
 
+  // Multi-granularity Data Aggregation
   const chartData = useMemo(() => {
     if (!selectedPatientId) return [];
 
@@ -19,6 +20,7 @@ export default function TrendsPage() {
     const patientRecords = records.filter(r => r.patientId === selectedPatientId);
 
     if (granularity === 'day') {
+      // Last 7 days
       return Array.from({ length: 7 }).map((_, i) => {
         const date = subDays(now, 6 - i);
         const dayStart = startOfDay(date);
@@ -42,6 +44,8 @@ export default function TrendsPage() {
     }
 
     if (granularity === 'shift') {
+      // For demo, we just show the 3 shifts of today
+      const todayStart = startOfDay(now);
       const shifts = [
         { name: '早班 (08-16)', start: 8, end: 16 },
         { name: '小夜 (16-00)', start: 16, end: 24 },
@@ -55,6 +59,7 @@ export default function TrendsPage() {
           if (s.start < s.end) {
             return hour >= s.start && hour < s.end;
           } else {
+            // Night shift spans midnight
             return hour >= s.start || hour < s.end;
           }
         });
@@ -72,6 +77,7 @@ export default function TrendsPage() {
     }
 
     if (granularity === 'week') {
+      // Last 4 weeks (Simplified for demo)
       return ['Week 1', 'Week 2', 'Week 3', 'Current'].map((name, i) => ({
         name,
         intake: 15000 + i * 1000,
@@ -94,6 +100,7 @@ export default function TrendsPage() {
         </div>
 
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
+          {/* Patient Selector */}
           <div className="flex-1 md:flex-initial min-w-[200px] relative">
             <select
               value={selectedPatientId}
@@ -108,6 +115,7 @@ export default function TrendsPage() {
             <User className="absolute left-4 top-1/2 -translate-y-1/2 text-primary" size={20} />
           </div>
 
+          {/* Granularity Selector */}
           <div className="flex bg-surface-muted p-1 rounded-2xl w-full md:w-auto">
             {(['shift', 'day', 'week'] as const).map((g) => (
               <button
@@ -129,6 +137,7 @@ export default function TrendsPage() {
       </header>
 
       <div className="space-y-10 pb-12">
+        {/* Trend Overview */}
         <section className="card border-none shadow-2xl shadow-primary-glow/10 p-8 min-h-[500px]">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-4">
             <h3 className="text-2xl font-black text-foreground/80 flex items-center gap-3">

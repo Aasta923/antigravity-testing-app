@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { PageShell } from "@/components/ui/PageShell";
 import { Plus, Search, UserPlus, Edit2, Trash2, Heart, X, Save } from "lucide-react";
-import { usePersistence } from "@/hooks/usePersistence";
+import { usePersistence } from "@/context/PersistenceContext";
 import { clsx } from "clsx";
 
 export default function PatientsPage() {
@@ -11,6 +11,7 @@ export default function PatientsPage() {
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   
+  // Form State
   const [newName, setNewName] = useState("");
   const [newBed, setNewBed] = useState("");
   const [newID, setNewID] = useState("");
@@ -51,6 +52,7 @@ export default function PatientsPage() {
         </button>
       </header>
 
+      {/* Add Patient Modal/Form Overlay */}
       {isAdding && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="card w-full max-w-md animate-fade-in border-none shadow-2xl">
@@ -74,24 +76,24 @@ export default function PatientsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                   <label className="text-xs font-black text-foreground-muted uppercase tracking-widest pl-1">病床號碼</label>
-                   <input 
-                     type="text" 
-                     value={newBed}
-                     onChange={(e) => setNewBed(e.target.value)}
-                     placeholder="例如: A101"
-                     className="w-full p-4 bg-surface-muted rounded-2xl border-none focus:ring-4 focus:ring-primary/20 outline-none font-bold"
-                   />
+                  <label className="text-xs font-black text-foreground-muted uppercase tracking-widest pl-1">病床號碼</label>
+                  <input 
+                    type="text" 
+                    value={newBed}
+                    onChange={(e) => setNewBed(e.target.value)}
+                    placeholder="例如: A101"
+                    className="w-full p-4 bg-surface-muted rounded-2xl border-none focus:ring-4 focus:ring-primary/20 outline-none font-bold"
+                  />
                 </div>
                 <div className="space-y-2">
-                   <label className="text-xs font-black text-foreground-muted uppercase tracking-widest pl-1">病歷號碼</label>
-                   <input 
-                     type="text" 
-                     value={newID}
-                     onChange={(e) => setNewID(e.target.value)}
-                     placeholder="可選填"
-                     className="w-full p-4 bg-surface-muted rounded-2xl border-none focus:ring-4 focus:ring-primary/20 outline-none font-bold"
-                   />
+                  <label className="text-xs font-black text-foreground-muted uppercase tracking-widest pl-1">病歷號碼</label>
+                  <input 
+                    type="text" 
+                    value={newID}
+                    onChange={(e) => setNewID(e.target.value)}
+                    placeholder="可選填"
+                    className="w-full p-4 bg-surface-muted rounded-2xl border-none focus:ring-4 focus:ring-primary/20 outline-none font-bold"
+                  />
                 </div>
               </div>
               

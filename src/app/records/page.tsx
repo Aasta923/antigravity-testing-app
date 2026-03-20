@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { PageShell } from "@/components/ui/PageShell";
 import { RecordForm } from "@/components/io/RecordForm";
 import { Plus, Trash2, Clock, Info, User } from "lucide-react";
-import { usePersistence } from "@/hooks/usePersistence";
+import { usePersistence } from "@/context/PersistenceContext";
 import { clsx } from "clsx";
 import { format } from "date-fns";
 
@@ -22,6 +22,7 @@ export default function RecordsPage() {
   }, [patients, selectedPatientId]);
 
   const calculateShiftTotal = (shiftName: string) => {
+    // Basic calculation for the selected patient
     return filteredRecords.reduce((acc, r) => acc + (r.type === 'input' ? r.amount : -r.amount), 0);
   };
 
@@ -36,6 +37,7 @@ export default function RecordsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          {/* Patient Selector */}
           <div className="flex-1 md:flex-initial min-w-[200px] relative">
             <select
               value={selectedPatientId}
@@ -89,6 +91,7 @@ export default function RecordsPage() {
         />
       ) : (
         <div className="space-y-10 animate-fade-in">
+          {/* Current Selection Ribbon */}
           <div className="p-4 bg-primary rounded-2xl shadow-lg shadow-primary-glow flex items-center justify-between text-white">
             <div className="flex items-center gap-4 pl-2">
               <div className="bg-white/20 p-2 rounded-xl">
@@ -104,6 +107,7 @@ export default function RecordsPage() {
             </div>
           </div>
 
+          {/* Shift Summaries */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {['早班 (08-16)', '小夜 (16-00)', '大夜 (00-08)'].map((shift, i) => (
               <div key={i} className="card bg-white border-none shadow-xl shadow-primary-glow/5 flex flex-col justify-between p-6">
@@ -121,6 +125,7 @@ export default function RecordsPage() {
             ))}
           </section>
 
+          {/* Historical List */}
           <section className="space-y-4">
             <h3 className="text-2xl font-black flex items-center gap-3 px-1 text-foreground/80">
               <Clock size={24} className="text-secondary" /> 

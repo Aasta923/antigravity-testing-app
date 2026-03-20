@@ -3,7 +3,7 @@
 import React from "react";
 import { PageShell } from "@/components/ui/PageShell";
 import { AlertCircle, ArrowUpRight, ArrowDownRight, Activity, Users, PlusCircle } from "lucide-react";
-import { usePersistence } from "@/hooks/usePersistence";
+import { usePersistence } from "@/context/PersistenceContext";
 import { clsx } from "clsx";
 
 export default function Dashboard() {
@@ -13,6 +13,7 @@ export default function Dashboard() {
   const totalOutput = records.filter(r => r.type === 'output').reduce((sum, r) => sum + r.amount, 0);
   const balance = totalInput - totalOutput;
 
+  // Alerts logic (Mocking based on data)
   const lowUrine = records.filter(r => r.category === 'urine').reduce((sum, r) => sum + r.amount, 0) < 300;
 
   return (
@@ -22,6 +23,7 @@ export default function Dashboard() {
         <p className="text-foreground-muted text-lg font-medium">歡迎回來，目前正在監控您的 {patients.length} 位病患紀錄中心。</p>
       </header>
 
+      {/* Hero Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         <div className="card relative overflow-hidden bg-white group border-none shadow-xl shadow-primary-glow">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform">
@@ -57,6 +59,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Real-time Alerts */}
         <section className="space-y-6">
           <h3 className="text-2xl font-black flex items-center gap-3 text-foreground/80 px-1">
             <AlertCircle className="text-secondary" />
@@ -84,6 +87,7 @@ export default function Dashboard() {
           </div>
         </section>
 
+        {/* Quick Links */}
         <section className="space-y-6">
           <h3 className="text-2xl font-black flex items-center gap-3 text-foreground/80 px-1">
             <Activity className="text-primary" />
