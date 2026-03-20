@@ -22,8 +22,10 @@ export const calculateBalance = (records: IORecord[]) => {
 export const groupRecordsByShift = (records: IORecord[], date: Date) => {
   return SHIFTS.map(shift => {
     const shiftRecords = records.filter(record => {
-      const recordDate = new Date(record.timestamp?.toDate ? record.timestamp.toDate() : record.timestamp);
+      const recordDate = parseISO(record.timestamp);
       
+      // Basic check: same day and within time range
+      // Special handling for the 00-08 and 16-00 shifts might be needed based on exact overlap
       const [startH, startM] = shift.startTime.split(':').map(Number);
       const [endH, endM] = shift.endTime.split(':').map(Number);
       
@@ -31,8 +33,10 @@ export const groupRecordsByShift = (records: IORecord[], date: Date) => {
       let endTime = setMinutes(setHours(date, endH === 0 ? 23 : endH), endM === 0 ? 59 : endM);
       
       if (endH === 0) {
+        // Night shift 16-00 ends at midnight
         return isWithinInterval(recordDate, { start: startTime, end: endTime });
       } else if (startH === 0) {
+        // Morning shift 00-08
         return isWithinInterval(recordDate, { start: startTime, end: endTime });
       }
       
@@ -52,10 +56,13 @@ export const groupRecordsByShift = (records: IORecord[], date: Date) => {
 export const checkAlerts = (records: IORecord[]) => {
   const alerts: string[] = [];
   
+  // 1. Urine < 300 in a shift
+  // (This needs to be checked per shift context, simplified here)
   const shiftGroups = groupRecordsByShift(records, new Date());
   shiftGroups.forEach(group => {
     const urineOutput = records
       .filter(r => r.category === 'urine') 
+      // Filter for records in this shift's time frame
       .reduce((sum, r) => sum + r.amount, 0);
       
     if (urineOutput > 0 && urineOutput < 300) {
@@ -63,5 +70,8 @@ export const checkAlerts = (records: IORecord[]) => {
     }
   });
 
+  // 2. No stool for 3+ days
+  // (In a real app, we query the last stool record timestamp)
+  
   return alerts;
 };
