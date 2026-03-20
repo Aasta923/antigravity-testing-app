@@ -28,7 +28,18 @@ interface PersistenceContextType {
   clearRecords: () => void;
 }
 
-const PersistenceContext = createContext<PersistenceContextType | undefined>(undefined);
+const defaultContext: PersistenceContextType = {
+  records: [],
+  patients: [],
+  selectedPatientId: "",
+  setSelectedPatientId: () => {},
+  addRecord: async () => {},
+  addPatient: async () => {},
+  deletePatient: async () => {},
+  clearRecords: async () => {},
+};
+
+const PersistenceContext = createContext<PersistenceContextType>(defaultContext);
 
 export const PersistenceProvider = ({ children }: { children: React.ReactNode }) => {
   const [records, setRecords] = useState<IORecord[]>([]);
@@ -170,20 +181,4 @@ export const PersistenceProvider = ({ children }: { children: React.ReactNode })
   );
 };
 
-export const usePersistence = () => {
-  const context = useContext(PersistenceContext);
-  if (context === undefined) {
-    // Standard fail-safe for build time/SSR
-    return {
-      records: [],
-      patients: [],
-      selectedPatientId: "",
-      setSelectedPatientId: () => {},
-      addRecord: async () => {},
-      addPatient: async () => {},
-      deletePatient: async () => {},
-      clearRecords: async () => {},
-    };
-  }
-  return context;
-};
+export const usePersistence = () => useContext(PersistenceContext);

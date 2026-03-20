@@ -67,15 +67,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    return {
-      user: null,
-      loading: true,
-      signInWithGoogle: async () => {},
-      logout: async () => {}
-    };
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
