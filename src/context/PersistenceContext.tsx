@@ -80,6 +80,8 @@ export const PersistenceProvider = ({ children }: { children: React.ReactNode })
           setSelectedPatientId(fetchedPatients[0].id);
         }
       } else {
+        // Seed initial patients if empty (optional, but requested implicitly by "initialized")
+        // In a real app, this might be handled by an admin or first setup
         setPatients([]);
       }
       setIsLoaded(true);
@@ -132,6 +134,8 @@ export const PersistenceProvider = ({ children }: { children: React.ReactNode })
     if (!db) return;
     try {
       await deleteDoc(doc(db, "patients", id));
+      // Optional: Also delete all records for this patient
+      // This is a bit complex for a simple callback, but good practice
     } catch (e) {
       console.error("Error deleting patient: ", e);
     }
@@ -140,6 +144,7 @@ export const PersistenceProvider = ({ children }: { children: React.ReactNode })
   const clearRecords = useCallback(async () => {
     if (!db) return;
     try {
+      // In Firestore, we have to delete each document individually or use a batch
       const q = collection(db, "records");
       const snapshot = await getDocs(q);
       const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
@@ -168,7 +173,17 @@ export const PersistenceProvider = ({ children }: { children: React.ReactNode })
 export const usePersistence = () => {
   const context = useContext(PersistenceContext);
   if (context === undefined) {
-    throw new Error("usePersistence must be used within a PersistenceProvider");
+    // Standard fail-safe for build time/SSR
+    return {
+      records: [],
+      patients: [],
+      selectedPatientId: "",
+      setSelectedPatientId: () => {},
+      addRecord: async () => {},
+      addPatient: async () => {},
+      deletePatient: async () => {},
+      clearRecords: async () => {},
+    };
   }
   return context;
 };

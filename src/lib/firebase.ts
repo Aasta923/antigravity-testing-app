@@ -12,9 +12,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialize Firebase
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Initialize Firebase safely
+let app;
+let auth: any;
+let db: any;
+
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "placeholder-api-key") {
+    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } else {
+    console.warn("Firebase config is missing or using placeholder. Firebase features will be disabled.");
+  }
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
+}
 
 export { auth, db };
